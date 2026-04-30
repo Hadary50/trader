@@ -7,7 +7,7 @@ const TraderProfile = () => {
   const { id } = useParams();
   const [trader, setTrader] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [formData, setFormData] = useState({ type: 'purchase', amount: '', scooterModel: '', notes: '', date: new Date().toISOString().split('T')[0], attachment: '' });
+  const [formData, setFormData] = useState({ type: 'purchase', amount: '', scooterModel: '', notes: '', date: new Date().toISOString().split('T')[0], attachment: '', isInvoiced: false });
   const [editingTx, setEditingTx] = useState(null);
   const [viewingAttachment, setViewingAttachment] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,7 +63,7 @@ const TraderProfile = () => {
     setIsSubmitting(true);
     try {
       await api.post(`/traders/${id}/transactions`, formData);
-      setFormData({ type: 'purchase', amount: '', scooterModel: '', notes: '', date: new Date().toISOString().split('T')[0], attachment: '' });
+      setFormData({ type: 'purchase', amount: '', scooterModel: '', notes: '', date: new Date().toISOString().split('T')[0], attachment: '', isInvoiced: false });
       await fetchTraderData(); // Refresh data
     } catch (error) {
       console.error(error);
@@ -105,6 +105,19 @@ const TraderProfile = () => {
       } finally {
         setIsSubmitting(false);
       }
+    }
+  };
+
+  const handleToggleInvoice = async (tx) => {
+    setIsSubmitting(true);
+    try {
+      await api.patch(`/traders/${id}/transactions/${tx._id}/toggle-invoice`);
+      await fetchTraderData();
+    } catch (error) {
+      console.error(error);
+      alert('حدث خطأ أثناء تحديث حالة الفاتورة.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -171,6 +184,20 @@ const TraderProfile = () => {
               <label className="form-label text-secondary fw-semibold">إرفاق إيصال / صورة (اختياري)</label>
               <input type="file" className="form-control" accept="image/*" onChange={(e) => handleImageUpload(e, false)} />
             </div>
+            {formData.type === 'purchase' && (
+              <div className="col-md-3 d-flex align-items-center">
+                <div className="form-check">
+                  <input 
+                    type="checkbox" 
+                    className="form-check-input" 
+                    id="isInvoiced" 
+                    checked={formData.isInvoiced} 
+                    onChange={(e) => setFormData({ ...formData, isInvoiced: e.target.checked })} 
+                  />
+                  <label className="form-check-label fw-semibold" htmlFor="isInvoiced text-white">تم عمل فاتورة</label>
+                </div>
+              </div>
+            )}
             <div className="col-md-3 d-flex align-items-end">
               <button type="submit" className={`btn w-100 fw-bold shadow-sm ${formData.type === 'purchase' ? 'btn-danger' : 'btn-success'}`} disabled={isSubmitting}>
                 {isSubmitting ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'تسجيل العملية'}
@@ -191,6 +218,7 @@ const TraderProfile = () => {
                 <th className="text-secondary">التفاصيل</th>
                 <th className="text-secondary">المبلغ</th>
                 <th className="text-secondary">ملاحظات</th>
+                <th className="text-secondary">الفاتورة</th>
                 <th className="text-secondary">المرفق</th>
                 <th className="text-secondary d-print-none">إجراءات</th>
               </tr>
@@ -210,6 +238,27 @@ const TraderProfile = () => {
                     {tx.type === 'purchase' ? '+' : '-'}{tx.amount.toLocaleString()} ج.م
                   </td>
                   <td>{tx.notes || '-'}</td>
+                  <td>
+                    {tx.type === 'purchase' ? (
+                      <button 
+                        className={`btn btn-sm ${tx.isInvoiced ? 'btn-success' : 'btn-outline-warning'} d-flex align-items-center gap-1`}
+                        onClick={() => handleToggleInvoice(tx)}
+                        disabled={isSubmitting}
+                      >
+                        {tx.isInvoiced ? (
+                          <>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                            تم الفوترة
+                          </>
+                        ) : (
+                          <>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                            بدون فاتورة
+                          </>
+                        )}
+                      </button>
+                    ) : '-'}
+                  </td>
                   <td>
                     {tx.attachment ? (
                       <button className="btn btn-sm btn-outline-info d-print-none d-flex align-items-center gap-1" onClick={() => setViewingAttachment(tx.attachment)}>
@@ -289,6 +338,18 @@ const TraderProfile = () => {
                       </div>
                     )}
                   </div>
+                  {editingTx.type === 'purchase' && (
+                    <div className="mb-3 form-check">
+                      <input 
+                        type="checkbox" 
+                        className="form-check-input" 
+                        id="editIsInvoiced" 
+                        checked={editingTx.isInvoiced} 
+                        onChange={(e) => setEditingTx({ ...editingTx, isInvoiced: e.target.checked })} 
+                      />
+                      <label className="form-check-label fw-semibold" htmlFor="editIsInvoiced">تم عمل فاتورة لهذا السكوتر</label>
+                    </div>
+                  )}
                 </form>
               </div>
               <div className="modal-footer">
