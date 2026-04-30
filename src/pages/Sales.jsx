@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Sales = () => {
   const [sales, setSales] = useState([]);
@@ -12,10 +13,17 @@ const Sales = () => {
     paymentType: 'cash',
     months: ''
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchSales();
-    fetchCustomers();
+    const fetchData = async () => {
+      try {
+        await Promise.all([fetchSales(), fetchCustomers()]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   const fetchSales = async () => {
@@ -72,6 +80,8 @@ const Sales = () => {
       }
     }
   };
+
+  if (isLoading) return <LoadingSpinner fullPage size="large" />;
 
   return (
     <div>

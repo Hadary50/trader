@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [search, setSearch] = useState('');
   const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchCustomers();
@@ -16,6 +18,8 @@ const Customers = () => {
       setCustomers(response.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,6 +46,8 @@ const Customers = () => {
   };
 
   const filteredCustomers = customers.filter(c => c.name.includes(search) || c.phone.includes(search));
+
+  if (isLoading) return <LoadingSpinner fullPage size="large" />;
 
   return (
     <div>

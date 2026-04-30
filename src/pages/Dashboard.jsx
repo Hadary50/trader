@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Dashboard = () => {
   const [data, setData] = useState({
@@ -8,6 +9,7 @@ const Dashboard = () => {
     totalCollected: 0,
     netBalance: 0
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
@@ -17,10 +19,12 @@ const Dashboard = () => {
     try {
       const response = await api.get('/dashboard');
       setData(response.data);
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) return <LoadingSpinner fullPage size="large" />;
 
   return (
     <div className="fade-in">

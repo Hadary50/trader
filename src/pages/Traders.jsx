@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Traders = () => {
   const [traders, setTraders] = useState([]);
   const [search, setSearch] = useState('');
   const [formData, setFormData] = useState({ name: '', phone: '', balance: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchTraders();
@@ -17,33 +20,43 @@ const Traders = () => {
       setTraders(response.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       await api.post('/traders', formData);
       setFormData({ name: '', phone: '', balance: 0 });
-      fetchTraders();
+      await fetchTraders();
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
     if (window.confirm('🚨 تحذير خطير: هل أنت متأكد من حذف هذا التاجر نهائياً؟\nسيتم حذف التاجر و**جميع عملياته وإيصالاته** بالكامل، ولن يمكنك التراجع عن هذا الإجراء!')) {
+      setIsSubmitting(true);
       try {
         await api.delete(`/traders/${id}`);
-        fetchTraders();
+        await fetchTraders();
       } catch (error) {
         console.error(error);
         alert('حدث خطأ أثناء محاولة الحذف.');
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
 
   const filteredTraders = traders.filter(t => t.name.includes(search) || t.phone.includes(search));
+
+  if (isLoading) return <LoadingSpinner fullPage size="large" />;
 
   return (
     <div className="fade-in">
@@ -68,7 +81,9 @@ const Traders = () => {
               <input type="number" className="form-control" placeholder="الرصيد إن وجد" value={formData.balance} onChange={(e) => setFormData({...formData, balance: e.target.value})} />
             </div>
             <div className="col-md-1 d-flex align-items-end">
-              <button type="submit" className="btn btn-primary w-100">إضافة</button>
+              <button type="submit" className="btn btn-primary w-100" disabled={isSubmitting}>
+                {isSubmitting ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'إضافة'}
+              </button>
             </div>
           </form>
         </div>

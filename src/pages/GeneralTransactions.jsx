@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const GeneralTransactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [formData, setFormData] = useState({ name: '', amount: '', notes: '' });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchTransactions();
@@ -15,6 +17,8 @@ const GeneralTransactions = () => {
       setTransactions(response.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -39,6 +43,8 @@ const GeneralTransactions = () => {
       }
     }
   };
+
+  if (isLoading) return <LoadingSpinner fullPage size="large" />;
 
   return (
     <div className="fade-in">

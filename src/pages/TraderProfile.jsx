@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const TraderProfile = () => {
   const { id } = useParams();
@@ -9,6 +10,7 @@ const TraderProfile = () => {
   const [formData, setFormData] = useState({ type: 'purchase', amount: '', scooterModel: '', notes: '', date: new Date().toISOString().split('T')[0], attachment: '' });
   const [editingTx, setEditingTx] = useState(null);
   const [viewingAttachment, setViewingAttachment] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageUpload = (e, isEdit = false) => {
     const file = e.target.files[0];
@@ -58,12 +60,15 @@ const TraderProfile = () => {
 
   const handleAddTransaction = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       await api.post(`/traders/${id}/transactions`, formData);
       setFormData({ type: 'purchase', amount: '', scooterModel: '', notes: '', date: new Date().toISOString().split('T')[0], attachment: '' });
-      fetchTraderData(); // Refresh data
+      await fetchTraderData(); // Refresh data
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -76,28 +81,34 @@ const TraderProfile = () => {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       await api.put(`/traders/${id}/transactions/${editingTx._id}`, editingTx);
       setEditingTx(null);
-      fetchTraderData(); // Refresh data
+      await fetchTraderData(); // Refresh data
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDeleteClick = async (txId) => {
     if (window.confirm('هل أنت متأكد من حذف هذه العملية نهائياً؟ سيتم إعادة حساب رصيد التاجر تلقائياً.')) {
+      setIsSubmitting(true);
       try {
         await api.delete(`/traders/${id}/transactions/${txId}`);
-        fetchTraderData(); // Refresh data
+        await fetchTraderData(); // Refresh data
       } catch (error) {
         console.error(error);
         alert('حدث خطأ أثناء الحذف، يرجى المحاولة مرة أخرى.');
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
 
-  if (!trader) return <div className="text-center mt-5"><div className="spinner-border text-primary" role="status"></div></div>;
+  if (!trader) return <LoadingSpinner fullPage size="large" />;
 
   return (
     <div className="fade-in">
@@ -161,8 +172,8 @@ const TraderProfile = () => {
               <input type="file" className="form-control" accept="image/*" onChange={(e) => handleImageUpload(e, false)} />
             </div>
             <div className="col-md-3 d-flex align-items-end">
-              <button type="submit" className={`btn w-100 fw-bold shadow-sm ${formData.type === 'purchase' ? 'btn-danger' : 'btn-success'}`}>
-                تسجيل العملية
+              <button type="submit" className={`btn w-100 fw-bold shadow-sm ${formData.type === 'purchase' ? 'btn-danger' : 'btn-success'}`} disabled={isSubmitting}>
+                {isSubmitting ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'تسجيل العملية'}
               </button>
             </div>
           </form>
@@ -281,8 +292,10 @@ const TraderProfile = () => {
                 </form>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setEditingTx(null)}>إلغاء</button>
-                <button type="submit" form="editForm" className="btn btn-primary">حفظ التعديلات</button>
+                <button type="button" className="btn btn-secondary" onClick={() => setEditingTx(null)} disabled={isSubmitting}>إلغاء</button>
+                <button type="submit" form="editForm" className="btn btn-primary" disabled={isSubmitting}>
+                  {isSubmitting ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'حفظ التعديلات'}
+                </button>
               </div>
             </div>
           </div>
