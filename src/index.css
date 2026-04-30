@@ -254,7 +254,7 @@ body {
 
   .table tbody td {
     border: 1px solid #dee2e6 !important;
-    color: white;
+    color: white !important;
   }
 
   .text-danger {
