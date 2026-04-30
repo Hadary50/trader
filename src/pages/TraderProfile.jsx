@@ -29,12 +29,12 @@ const TraderProfile = () => {
 
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
+
         const base64String = canvas.toDataURL('image/jpeg', 0.7);
         if (isEdit) {
-          setEditingTx(prev => ({...prev, attachment: base64String}));
+          setEditingTx(prev => ({ ...prev, attachment: base64String }));
         } else {
-          setFormData(prev => ({...prev, attachment: base64String}));
+          setFormData(prev => ({ ...prev, attachment: base64String }));
         }
       };
       img.src = event.target.result;
@@ -108,7 +108,7 @@ const TraderProfile = () => {
         </div>
         <div className="text-end d-flex flex-column align-items-end gap-3">
           <button className="btn btn-success d-flex align-items-center gap-2 shadow-sm" onClick={() => window.print()}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
             طباعة كشف الحساب
           </button>
           <div className="text-start bg-light p-3 rounded shadow-sm">
@@ -119,12 +119,12 @@ const TraderProfile = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Print Only Header */}
       <div className="d-none d-print-block mb-4 text-center">
         <h2 className="fw-bold mb-3">كشف حساب التاجر: {trader.name}</h2>
         <h4 className={`fw-bold ${trader.balance > 0 ? 'text-danger' : 'text-success'}`}>الرصيد الحالي: {trader.balance.toLocaleString()} ج.م</h4>
-        <hr/>
+        <hr />
       </div>
 
       <div className="card mb-5 d-print-none border-0 shadow-sm">
@@ -133,11 +133,11 @@ const TraderProfile = () => {
           <form onSubmit={handleAddTransaction} className="row g-3">
             <div className="col-md-2">
               <label className="form-label text-secondary fw-semibold">التاريخ</label>
-              <input type="date" className="form-control" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} required />
+              <input type="date" className="form-control" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
             </div>
             <div className="col-md-2">
               <label className="form-label text-secondary fw-semibold">نوع العملية</label>
-              <select className="form-select fw-bold" value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}>
+              <select className="form-select fw-bold" value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })}>
                 <option value="purchase">سحب سكوتر</option>
                 <option value="payment">دفعة نقدية</option>
               </select>
@@ -145,16 +145,16 @@ const TraderProfile = () => {
             {formData.type === 'purchase' && (
               <div className="col-md-2 fade-in">
                 <label className="form-label text-secondary fw-semibold">الموديل / التفاصيل</label>
-                <input type="text" className="form-control" placeholder="SYM ST 200" value={formData.scooterModel} onChange={(e) => setFormData({...formData, scooterModel: e.target.value})} required={formData.type === 'purchase'} />
+                <input type="text" className="form-control" placeholder="SYM ST 200" value={formData.scooterModel} onChange={(e) => setFormData({ ...formData, scooterModel: e.target.value })} required={formData.type === 'purchase'} />
               </div>
             )}
             <div className="col-md-2">
               <label className="form-label text-secondary fw-semibold">المبلغ</label>
-              <input type="number" className="form-control fw-bold text-primary" placeholder="0" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} required />
+              <input type="number" className="form-control fw-bold text-primary" placeholder="0" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} required />
             </div>
             <div className="col-md-4">
               <label className="form-label text-secondary fw-semibold">ملاحظات (اختياري)</label>
-              <input type="text" className="form-control" placeholder="أي تفاصيل أخرى..." value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
+              <input type="text" className="form-control" placeholder="أي تفاصيل أخرى..." value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} />
             </div>
             <div className="col-md-9">
               <label className="form-label text-secondary fw-semibold">إرفاق إيصال / صورة (اختياري)</label>
@@ -184,13 +184,13 @@ const TraderProfile = () => {
                 <th className="text-secondary d-print-none">إجراءات</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className='text-white'>
               {transactions.map(tx => (
                 <tr key={tx._id}>
-                  <td>{new Date(tx.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' })}</td>
+                  <td className='text-white'>{new Date(tx.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
                   <td>
-                    {tx.type === 'purchase' ? 
-                      <span className="badge bg-danger">سحب سكوتر</span> : 
+                    {tx.type === 'purchase' ?
+                      <span className="badge bg-danger">سحب سكوتر</span> :
                       <span className="badge bg-success">دفعة نقدية استلمناها</span>
                     }
                   </td>
@@ -202,7 +202,7 @@ const TraderProfile = () => {
                   <td>
                     {tx.attachment ? (
                       <button className="btn btn-sm btn-outline-info d-print-none d-flex align-items-center gap-1" onClick={() => setViewingAttachment(tx.attachment)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
                         عرض
                       </button>
                     ) : (
@@ -213,10 +213,10 @@ const TraderProfile = () => {
                   <td className="d-print-none">
                     <div className="d-flex gap-2">
                       <button className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 px-2" onClick={() => handleEditClick(tx)} title="تعديل">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                       </button>
                       <button className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 px-2" onClick={() => handleDeleteClick(tx._id)} title="حذف">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
                       </button>
                     </div>
                   </td>
@@ -245,11 +245,11 @@ const TraderProfile = () => {
                 <form id="editForm" onSubmit={handleEditSubmit}>
                   <div className="mb-3">
                     <label className="form-label">التاريخ</label>
-                    <input type="date" className="form-control" value={editingTx.date} onChange={(e) => setEditingTx({...editingTx, date: e.target.value})} required />
+                    <input type="date" className="form-control" value={editingTx.date} onChange={(e) => setEditingTx({ ...editingTx, date: e.target.value })} required />
                   </div>
                   <div className="mb-3">
                     <label className="form-label">نوع العملية</label>
-                    <select className="form-select" value={editingTx.type} onChange={(e) => setEditingTx({...editingTx, type: e.target.value})}>
+                    <select className="form-select" value={editingTx.type} onChange={(e) => setEditingTx({ ...editingTx, type: e.target.value })}>
                       <option value="purchase">سحب سكوتر</option>
                       <option value="payment">دفعة نقدية</option>
                     </select>
@@ -257,23 +257,23 @@ const TraderProfile = () => {
                   {editingTx.type === 'purchase' && (
                     <div className="mb-3">
                       <label className="form-label">موديل السكوتر / التفاصيل</label>
-                      <input type="text" className="form-control" value={editingTx.scooterModel} onChange={(e) => setEditingTx({...editingTx, scooterModel: e.target.value})} required={editingTx.type === 'purchase'} />
+                      <input type="text" className="form-control" value={editingTx.scooterModel} onChange={(e) => setEditingTx({ ...editingTx, scooterModel: e.target.value })} required={editingTx.type === 'purchase'} />
                     </div>
                   )}
                   <div className="mb-3">
                     <label className="form-label">المبلغ</label>
-                    <input type="number" className="form-control" value={editingTx.amount} onChange={(e) => setEditingTx({...editingTx, amount: e.target.value})} required />
+                    <input type="number" className="form-control" value={editingTx.amount} onChange={(e) => setEditingTx({ ...editingTx, amount: e.target.value })} required />
                   </div>
                   <div className="mb-3">
                     <label className="form-label">ملاحظات (اختياري)</label>
-                    <input type="text" className="form-control" value={editingTx.notes} onChange={(e) => setEditingTx({...editingTx, notes: e.target.value})} />
+                    <input type="text" className="form-control" value={editingTx.notes} onChange={(e) => setEditingTx({ ...editingTx, notes: e.target.value })} />
                   </div>
                   <div className="mb-3">
                     <label className="form-label fw-semibold">إرفاق إيصال / صورة جديد (اختياري)</label>
                     <input type="file" className="form-control" accept="image/*" onChange={(e) => handleImageUpload(e, true)} />
                     {editingTx.attachment && (
                       <div className="mt-2 text-success small fw-bold d-flex align-items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                         يوجد مرفق محفوظ مسبقاً (رفع ملف جديد سيستبدله)
                       </div>
                     )}
