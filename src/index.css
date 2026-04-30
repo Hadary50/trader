@@ -167,3 +167,34 @@ body {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Print Styles */
+@media print {
+  body {
+    background: none !important;
+    background-color: white !important;
+    color: black !important;
+  }
+  .card, .glass-card {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: black !important;
+  }
+  .table {
+    color: black !important;
+  }
+  .table thead th {
+    background-color: #f8f9fa !important;
+    color: black !important;
+    border: 1px solid #dee2e6 !important;
+  }
+  .table tbody td {
+    border: 1px solid #dee2e6 !important;
+    color: black !important;
+  }
+  .text-danger { color: #dc3545 !important; }
+  .text-success { color: #198754 !important; }
+  .text-primary, .text-secondary, .text-muted { color: black !important; }
+  .badge { border: 1px solid #000; color: #000 !important; background: transparent !important; }
+}
