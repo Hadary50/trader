@@ -6,7 +6,8 @@ const TraderProfile = () => {
   const { id } = useParams();
   const [trader, setTrader] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [formData, setFormData] = useState({ type: 'purchase', amount: '', scooterModel: '', notes: '' });
+  const [formData, setFormData] = useState({ type: 'purchase', amount: '', scooterModel: '', notes: '', date: new Date().toISOString().split('T')[0] });
+  const [editingTx, setEditingTx] = useState(null);
 
   useEffect(() => {
     fetchTraderData();
@@ -26,7 +27,25 @@ const TraderProfile = () => {
     e.preventDefault();
     try {
       await api.post(`/traders/${id}/transactions`, formData);
-      setFormData({ type: 'purchase', amount: '', scooterModel: '', notes: '' });
+      setFormData({ type: 'purchase', amount: '', scooterModel: '', notes: '', date: new Date().toISOString().split('T')[0] });
+      fetchTraderData(); // Refresh data
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleEditClick = (tx) => {
+    setEditingTx({
+      ...tx,
+      date: new Date(tx.date).toISOString().split('T')[0]
+    });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await api.put(`/traders/${id}/transactions/${editingTx._id}`, editingTx);
+      setEditingTx(null);
       fetchTraderData(); // Refresh data
     } catch (error) {
       console.error(error);
@@ -54,15 +73,19 @@ const TraderProfile = () => {
         <div className="card-body p-4">
           <h5 className="card-title mb-4">تسجيل عملية جديدة</h5>
           <form onSubmit={handleAddTransaction} className="row g-3">
-            <div className="col-md-3">
+            <div className="col-md-2">
+              <label className="form-label text-secondary">التاريخ</label>
+              <input type="date" className="form-control" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} required />
+            </div>
+            <div className="col-md-2">
               <label className="form-label text-secondary">نوع العملية</label>
               <select className="form-select" value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}>
-                <option value="purchase">سحب سكوتر (يزيد المديونية)</option>
-                <option value="payment">دفعة نقدية (يقلل المديونية)</option>
+                <option value="purchase">سحب سكوتر</option>
+                <option value="payment">دفعة نقدية</option>
               </select>
             </div>
             {formData.type === 'purchase' && (
-              <div className="col-md-3 fade-in">
+              <div className="col-md-2 fade-in">
                 <label className="form-label text-secondary">موديل السكوتر / التفاصيل</label>
                 <input type="text" className="form-control" placeholder="مثال: SYM ST 200" value={formData.scooterModel} onChange={(e) => setFormData({...formData, scooterModel: e.target.value})} required={formData.type === 'purchase'} />
               </div>
@@ -95,6 +118,7 @@ const TraderProfile = () => {
                 <th>التفاصيل</th>
                 <th>المبلغ</th>
                 <th>ملاحظات</th>
+                <th>إجراءات</th>
               </tr>
             </thead>
             <tbody>
@@ -112,17 +136,67 @@ const TraderProfile = () => {
                     {tx.type === 'purchase' ? '+' : '-'}{tx.amount.toLocaleString()} ج.م
                   </td>
                   <td>{tx.notes || '-'}</td>
+                  <td>
+                    <button className="btn btn-sm btn-outline-primary" onClick={() => handleEditClick(tx)}>تعديل</button>
+                  </td>
                 </tr>
               ))}
               {transactions.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="text-center py-4 text-secondary">لم يتم تسجيل أي عمليات بعد لهذا التاجر</td>
+                  <td colSpan="6" className="text-center py-4 text-secondary">لم يتم تسجيل أي عمليات بعد لهذا التاجر</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {editingTx && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog">
+            <div className="modal-content text-dark">
+              <div className="modal-header">
+                <h5 className="modal-title">تعديل العملية</h5>
+                <button type="button" className="btn-close" onClick={() => setEditingTx(null)}></button>
+              </div>
+              <div className="modal-body">
+                <form id="editForm" onSubmit={handleEditSubmit}>
+                  <div className="mb-3">
+                    <label className="form-label">التاريخ</label>
+                    <input type="date" className="form-control" value={editingTx.date} onChange={(e) => setEditingTx({...editingTx, date: e.target.value})} required />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">نوع العملية</label>
+                    <select className="form-select" value={editingTx.type} onChange={(e) => setEditingTx({...editingTx, type: e.target.value})}>
+                      <option value="purchase">سحب سكوتر</option>
+                      <option value="payment">دفعة نقدية</option>
+                    </select>
+                  </div>
+                  {editingTx.type === 'purchase' && (
+                    <div className="mb-3">
+                      <label className="form-label">موديل السكوتر / التفاصيل</label>
+                      <input type="text" className="form-control" value={editingTx.scooterModel} onChange={(e) => setEditingTx({...editingTx, scooterModel: e.target.value})} required={editingTx.type === 'purchase'} />
+                    </div>
+                  )}
+                  <div className="mb-3">
+                    <label className="form-label">المبلغ</label>
+                    <input type="number" className="form-control" value={editingTx.amount} onChange={(e) => setEditingTx({...editingTx, amount: e.target.value})} required />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">ملاحظات (اختياري)</label>
+                    <input type="text" className="form-control" value={editingTx.notes} onChange={(e) => setEditingTx({...editingTx, notes: e.target.value})} />
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setEditingTx(null)}>إلغاء</button>
+                <button type="submit" form="editForm" className="btn btn-primary">حفظ التعديلات</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
