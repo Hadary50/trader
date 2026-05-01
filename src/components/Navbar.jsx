@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 const Navbar = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const isAdmin = !!localStorage.getItem('token');
   const isActive = (path) => location.pathname === path ? 'active' : '';
 
   const handleLinkClick = () => setIsOpen(false);
@@ -20,15 +21,19 @@ const Navbar = () => {
         </button>
         <div className={`collapse navbar-collapse ${isOpen ? 'show' : ''}`}>
           <ul className="navbar-nav me-auto">
-            <li className="nav-item">
-              <Link className={`nav-link ${isActive('/')}`} to="/" onClick={handleLinkClick}>الرئيسية</Link>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link ${isActive('/traders')}`} to="/traders" onClick={handleLinkClick}>كشوفات التجار</Link>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link ${isActive('/general')}`} to="/general" onClick={handleLinkClick}>المصروفات (علينا)</Link>
-            </li>
+            {isAdmin && (
+              <>
+                <li className="nav-item">
+                  <Link className={`nav-link ${isActive('/')}`} to="/" onClick={handleLinkClick}>الرئيسية</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className={`nav-link ${isActive('/traders')}`} to="/traders" onClick={handleLinkClick}>كشوفات التجار</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className={`nav-link ${isActive('/general')}`} to="/general" onClick={handleLinkClick}>المصروفات (علينا)</Link>
+                </li>
+              </>
+            )}
             <li className="nav-item">
               <Link className={`nav-link ${isActive('/stock')}`} to="/stock" onClick={handleLinkClick}>الاستوك (المخزن)</Link>
             </li>
