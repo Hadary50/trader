@@ -6,6 +6,7 @@ const GeneralTransactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [formData, setFormData] = useState({ name: '', amount: '', notes: '' });
   const [isLoading, setIsLoading] = useState(true);
+  const isAdmin = !!localStorage.getItem('token');
 
   useEffect(() => {
     fetchTransactions();
@@ -52,28 +53,30 @@ const GeneralTransactions = () => {
         <h2>المصروفات والموردين (علينا)</h2>
       </div>
       
-      <div className="card mb-5">
-        <div className="card-body p-4">
-          <h5 className="card-title mb-4">إضافة مصروف أو مستحقات مورد</h5>
-          <form onSubmit={handleAdd} className="row g-3">
-            <div className="col-md-4">
-              <label className="form-label text-secondary">الاسم (الجهة / المورد)</label>
-              <input type="text" className="form-control" placeholder="مثال: مصاريف شحن، مورد كذا..." value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
-            </div>
-            <div className="col-md-3">
-              <label className="form-label text-secondary">المبلغ المدفوع / المستحق</label>
-              <input type="number" className="form-control" placeholder="0" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} required />
-            </div>
-            <div className="col-md-3">
-              <label className="form-label text-secondary">ملاحظات</label>
-              <input type="text" className="form-control" placeholder="اختياري..." value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
-            </div>
-            <div className="col-md-2 d-flex align-items-end">
-              <button type="submit" className="btn btn-danger w-100">تسجيل</button>
-            </div>
-          </form>
+      {isAdmin && (
+        <div className="card mb-5">
+          <div className="card-body p-4">
+            <h5 className="card-title mb-4">إضافة مصروف أو مستحقات مورد</h5>
+            <form onSubmit={handleAdd} className="row g-3">
+              <div className="col-md-4">
+                <label className="form-label text-secondary">الاسم (الجهة / المورد)</label>
+                <input type="text" className="form-control" placeholder="مثال: مصاريف شحن، مورد كذا..." value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label text-secondary">المبلغ المدفوع / المستحق</label>
+                <input type="number" className="form-control" placeholder="0" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} required />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label text-secondary">ملاحظات</label>
+                <input type="text" className="form-control" placeholder="اختياري..." value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
+              </div>
+              <div className="col-md-2 d-flex align-items-end">
+                <button type="submit" className="btn btn-danger w-100">تسجيل</button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="card">
         <div className="table-responsive">
@@ -95,7 +98,9 @@ const GeneralTransactions = () => {
                   <td className="text-danger fw-bold">{t.amount.toLocaleString()} ج.م</td>
                   <td>{t.notes || '-'}</td>
                   <td>
-                    <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(t._id)}>حذف</button>
+                    {isAdmin && (
+                      <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(t._id)}>حذف</button>
+                    )}
                   </td>
                 </tr>
               ))}

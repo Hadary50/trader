@@ -11,6 +11,7 @@ const TraderProfile = () => {
   const [editingTx, setEditingTx] = useState(null);
   const [viewingAttachment, setViewingAttachment] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isAdmin = !!localStorage.getItem('token');
 
   const handleImageUpload = (e, isEdit = false) => {
     const file = e.target.files[0];
@@ -151,61 +152,63 @@ const TraderProfile = () => {
         <hr />
       </div>
 
-      <div className="card mb-5 d-print-none border-0 shadow-sm">
-        <div className="card-body p-4">
-          <h5 className="card-title mb-4">تسجيل عملية جديدة</h5>
-          <form onSubmit={handleAddTransaction} className="row g-3">
-            <div className="col-md-2">
-              <label className="form-label text-secondary fw-semibold">التاريخ</label>
-              <input type="date" className="form-control" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
-            </div>
-            <div className="col-md-2">
-              <label className="form-label text-secondary fw-semibold">نوع العملية</label>
-              <select className="form-select fw-bold" value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })}>
-                <option value="purchase">سحب سكوتر</option>
-                <option value="payment">دفعة نقدية</option>
-              </select>
-            </div>
-            {formData.type === 'purchase' && (
-              <div className="col-md-2 fade-in">
-                <label className="form-label text-secondary fw-semibold">الموديل / التفاصيل</label>
-                <input type="text" className="form-control" placeholder="SYM ST 200" value={formData.scooterModel} onChange={(e) => setFormData({ ...formData, scooterModel: e.target.value })} required={formData.type === 'purchase'} />
+      {isAdmin && (
+        <div className="card mb-5 d-print-none border-0 shadow-sm">
+          <div className="card-body p-4">
+            <h5 className="card-title mb-4">تسجيل عملية جديدة</h5>
+            <form onSubmit={handleAddTransaction} className="row g-3">
+              <div className="col-md-2">
+                <label className="form-label text-secondary fw-semibold">التاريخ</label>
+                <input type="date" className="form-control" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
               </div>
-            )}
-            <div className="col-md-2">
-              <label className="form-label text-secondary fw-semibold">المبلغ</label>
-              <input type="number" className="form-control fw-bold text-primary" placeholder="0" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} required />
-            </div>
-            <div className="col-md-4">
-              <label className="form-label text-secondary fw-semibold">ملاحظات (اختياري)</label>
-              <input type="text" className="form-control" placeholder="أي تفاصيل أخرى..." value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} />
-            </div>
-            <div className="col-md-9">
-              <label className="form-label text-secondary fw-semibold">إرفاق إيصال / صورة (اختياري)</label>
-              <input type="file" className="form-control" accept="image/*" onChange={(e) => handleImageUpload(e, false)} />
-            </div>
-            {formData.type === 'purchase' && (
-              <div className="col-md-3 d-flex align-items-center">
-                <div className="form-check">
-                  <input 
-                    type="checkbox" 
-                    className="form-check-input" 
-                    id="isInvoiced" 
-                    checked={formData.isInvoiced} 
-                    onChange={(e) => setFormData({ ...formData, isInvoiced: e.target.checked })} 
-                  />
-                  <label className="form-check-label fw-semibold" htmlFor="isInvoiced text-white">تم عمل فاتورة</label>
+              <div className="col-md-2">
+                <label className="form-label text-secondary fw-semibold">نوع العملية</label>
+                <select className="form-select fw-bold" value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })}>
+                  <option value="purchase">سحب سكوتر</option>
+                  <option value="payment">دفعة نقدية</option>
+                </select>
+              </div>
+              {formData.type === 'purchase' && (
+                <div className="col-md-2 fade-in">
+                  <label className="form-label text-secondary fw-semibold">الموديل / التفاصيل</label>
+                  <input type="text" className="form-control" placeholder="SYM ST 200" value={formData.scooterModel} onChange={(e) => setFormData({ ...formData, scooterModel: e.target.value })} required={formData.type === 'purchase'} />
                 </div>
+              )}
+              <div className="col-md-2">
+                <label className="form-label text-secondary fw-semibold">المبلغ</label>
+                <input type="number" className="form-control fw-bold text-primary" placeholder="0" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} required />
               </div>
-            )}
-            <div className="col-md-3 d-flex align-items-end">
-              <button type="submit" className={`btn w-100 fw-bold shadow-sm ${formData.type === 'purchase' ? 'btn-danger' : 'btn-success'}`} disabled={isSubmitting}>
-                {isSubmitting ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'تسجيل العملية'}
-              </button>
-            </div>
-          </form>
+              <div className="col-md-4">
+                <label className="form-label text-secondary fw-semibold">ملاحظات (اختياري)</label>
+                <input type="text" className="form-control" placeholder="أي تفاصيل أخرى..." value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} />
+              </div>
+              <div className="col-md-9">
+                <label className="form-label text-secondary fw-semibold">إرفاق إيصال / صورة (اختياري)</label>
+                <input type="file" className="form-control" accept="image/*" onChange={(e) => handleImageUpload(e, false)} />
+              </div>
+              {formData.type === 'purchase' && (
+                <div className="col-md-3 d-flex align-items-center">
+                  <div className="form-check">
+                    <input 
+                      type="checkbox" 
+                      className="form-check-input" 
+                      id="isInvoiced" 
+                      checked={formData.isInvoiced} 
+                      onChange={(e) => setFormData({ ...formData, isInvoiced: e.target.checked })} 
+                    />
+                    <label className="form-check-label fw-semibold" htmlFor="isInvoiced text-white">تم عمل فاتورة</label>
+                  </div>
+                </div>
+              )}
+              <div className="col-md-3 d-flex align-items-end">
+                <button type="submit" className={`btn w-100 fw-bold shadow-sm ${formData.type === 'purchase' ? 'btn-danger' : 'btn-success'}`} disabled={isSubmitting}>
+                  {isSubmitting ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'تسجيل العملية'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
 
       <h4 className="mb-4">سجل العمليات (History)</h4>
       <div className="card">
@@ -242,8 +245,8 @@ const TraderProfile = () => {
                     {tx.type === 'purchase' ? (
                       <button 
                         className={`btn btn-sm ${tx.isInvoiced ? 'btn-success' : 'btn-outline-warning'} d-flex align-items-center gap-1`}
-                        onClick={() => handleToggleInvoice(tx)}
-                        disabled={isSubmitting}
+                        onClick={() => isAdmin && handleToggleInvoice(tx)}
+                        disabled={isSubmitting || !isAdmin}
                       >
                         {tx.isInvoiced ? (
                           <>
@@ -271,14 +274,16 @@ const TraderProfile = () => {
                     {tx.attachment && <span className="d-none d-print-inline text-muted small">مرفق بالسيستم</span>}
                   </td>
                   <td className="d-print-none">
-                    <div className="d-flex gap-2">
-                      <button className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 px-2" onClick={() => handleEditClick(tx)} title="تعديل">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-                      </button>
-                      <button className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 px-2" onClick={() => handleDeleteClick(tx._id)} title="حذف">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
-                      </button>
-                    </div>
+                    {isAdmin && (
+                      <div className="d-flex gap-2">
+                        <button className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 px-2" onClick={() => handleEditClick(tx)} title="تعديل">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                        </button>
+                        <button className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 px-2" onClick={() => handleDeleteClick(tx._id)} title="حذف">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

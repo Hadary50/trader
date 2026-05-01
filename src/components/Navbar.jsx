@@ -29,7 +29,21 @@ const Navbar = () => {
             <li className="nav-item">
               <Link className={`nav-link ${isActive('/general')}`} to="/general" onClick={handleLinkClick}>المصروفات (علينا)</Link>
             </li>
+            <li className="nav-item">
+              <Link className={`nav-link ${isActive('/stock')}`} to="/stock" onClick={handleLinkClick}>الاستوك (المخزن)</Link>
+            </li>
           </ul>
+          <div className="d-flex">
+            {localStorage.getItem('token') ? (
+              <button className="btn btn-outline-danger btn-sm fw-bold px-3 rounded-pill" onClick={() => { localStorage.removeItem('token'); window.location.href = '/'; }}>
+                خروج
+              </button>
+            ) : (
+              <Link className="btn btn-primary btn-sm fw-bold px-3 rounded-pill" to="/login" onClick={handleLinkClick}>
+                دخول الإدارة
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </nav>

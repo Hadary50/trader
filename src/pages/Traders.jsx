@@ -9,6 +9,7 @@ const Traders = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', balance: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isAdmin = !!localStorage.getItem('token');
 
   useEffect(() => {
     fetchTraders();
@@ -64,30 +65,32 @@ const Traders = () => {
         <h2>إدارة التجار</h2>
       </div>
       
-      <div className="card mb-5">
-        <div className="card-body p-4">
-          <h5 className="card-title mb-4">إضافة تاجر جديد</h5>
-          <form onSubmit={handleAdd} className="row g-3">
-            <div className="col-md-4">
-              <label className="form-label text-secondary">اسم التاجر</label>
-              <input type="text" className="form-control" placeholder="أدخل اسم التاجر" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
-            </div>
-            <div className="col-md-4">
-              <label className="form-label text-secondary">رقم الهاتف</label>
-              <input type="text" className="form-control" placeholder="01xxxxxxxxx" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} required />
-            </div>
-            <div className="col-md-3">
-              <label className="form-label text-secondary">الرصيد الافتتاحي (عليه)</label>
-              <input type="number" className="form-control" placeholder="الرصيد إن وجد" value={formData.balance} onChange={(e) => setFormData({...formData, balance: e.target.value})} />
-            </div>
-            <div className="col-md-1 d-flex align-items-end">
-              <button type="submit" className="btn btn-primary w-100" disabled={isSubmitting}>
-                {isSubmitting ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'إضافة'}
-              </button>
-            </div>
-          </form>
+      {isAdmin && (
+        <div className="card mb-5">
+          <div className="card-body p-4">
+            <h5 className="card-title mb-4">إضافة تاجر جديد</h5>
+            <form onSubmit={handleAdd} className="row g-3">
+              <div className="col-md-4">
+                <label className="form-label text-secondary">اسم التاجر</label>
+                <input type="text" className="form-control" placeholder="أدخل اسم التاجر" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
+              </div>
+              <div className="col-md-4">
+                <label className="form-label text-secondary">رقم الهاتف</label>
+                <input type="text" className="form-control" placeholder="01xxxxxxxxx" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} required />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label text-secondary">الرصيد الافتتاحي (عليه)</label>
+                <input type="number" className="form-control" placeholder="الرصيد إن وجد" value={formData.balance} onChange={(e) => setFormData({...formData, balance: e.target.value})} />
+              </div>
+              <div className="col-md-1 d-flex align-items-end">
+                <button type="submit" className="btn btn-primary w-100" disabled={isSubmitting}>
+                  {isSubmitting ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'إضافة'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="mb-4">
         <input type="text" className="form-control form-control-lg" placeholder="ابحث عن تاجر بالاسم أو الرقم..." value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -120,9 +123,11 @@ const Traders = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                         كشف الحساب
                       </Link>
-                      <button className="btn btn-outline-danger btn-sm px-3 d-flex align-items-center gap-1" onClick={() => handleDelete(trader._id)} title="حذف التاجر">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                      </button>
+                      {isAdmin && (
+                        <button className="btn btn-outline-danger btn-sm px-3 d-flex align-items-center gap-1" onClick={() => handleDelete(trader._id)} title="حذف التاجر">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
